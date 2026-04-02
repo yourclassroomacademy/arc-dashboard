@@ -1,0 +1,428 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lincoln Elementary — ARC Model Dashboard</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'DM Sans', system-ui, sans-serif; background: #F5F3EE; color: #2C2C2A; overflow-x: hidden; }
+  .dash-body { overflow-x: hidden; }
+
+  .dash-header {
+    background: #2C2C2A;
+    padding: 20px 32px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .dash-header-left { display: flex; flex-direction: column; gap: 2px; }
+  .dash-school { font-size: 11px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.09em; color: #F0B429; }
+  .dash-title { font-size: 18px; font-weight: 500; color: #F5F3EE; }
+  .dash-badge { font-size: 11px; background: rgba(240,180,41,0.15); color: #F0B429; border: 1px solid rgba(240,180,41,0.3); border-radius: 20px; padding: 4px 12px; font-weight: 500; }
+
+  .dash-body { padding: 24px 32px; }
+
+  .stats-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 24px; }
+  .stat-card { background: #fff; border-radius: 12px; border: 0.5px solid rgba(44,44,42,0.1); padding: 16px 18px; }
+  .stat-label { font-size: 11px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.08em; color: rgba(44,44,42,0.5); margin-bottom: 6px; }
+  .stat-value { font-size: 28px; font-weight: 500; color: #2C2C2A; line-height: 1; }
+  .stat-sub { font-size: 11px; color: rgba(44,44,42,0.45); margin-top: 4px; }
+
+  .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 16px; }
+  .card { background: #fff; border-radius: 12px; border: 0.5px solid rgba(44,44,42,0.1); padding: 20px; }
+  .card-title { font-size: 13px; font-weight: 500; color: #2C2C2A; margin-bottom: 16px; display: flex; align-items: center; justify-content: space-between; }
+  .card-eyebrow { font-size: 10px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.09em; color: #F0B429; margin-bottom: 6px; }
+
+  .teacher-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 16px; }
+  .teacher-card {
+    background: #fff; border-radius: 12px; border: 0.5px solid rgba(44,44,42,0.1);
+    padding: 16px; cursor: pointer; transition: border-color 0.15s, transform 0.1s;
+  }
+  .teacher-card:hover { border-color: #F0B429; transform: translateY(-1px); }
+  .teacher-card.active { border-color: #F0B429; border-width: 2px; }
+  .teacher-avatar {
+    width: 36px; height: 36px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 13px; font-weight: 500; margin-bottom: 10px;
+  }
+  .teacher-name { font-size: 13px; font-weight: 500; color: #2C2C2A; margin-bottom: 2px; }
+  .teacher-checkins { font-size: 11px; color: rgba(44,44,42,0.5); margin-bottom: 8px; }
+  .badge-pill {
+    display: inline-flex; align-items: center; gap: 5px;
+    font-size: 11px; font-weight: 500; padding: 3px 10px;
+    border-radius: 20px; border: 1px solid;
+  }
+  .badge-dot { width: 6px; height: 6px; border-radius: 50%; }
+
+  .badge-wayfinder { color: #4A6741; border-color: #4A6741; background: rgba(74,103,65,0.08); }
+  .badge-wayfinder .badge-dot { background: #4A6741; }
+  .badge-trailblazer { color: #F0B429; border-color: #F0B429; background: rgba(240,180,41,0.08); }
+  .badge-trailblazer .badge-dot { background: #F0B429; }
+  .badge-spark { color: rgba(44,44,42,0.5); border-color: rgba(44,44,42,0.2); background: rgba(44,44,42,0.04); }
+  .badge-spark .badge-dot { background: rgba(44,44,42,0.3); }
+
+  .detail-panel { background: #fff; border-radius: 12px; border: 0.5px solid rgba(44,44,42,0.1); padding: 24px; margin-bottom: 16px; display: none; overflow: hidden; }
+  .detail-panel.visible { display: block; }
+  .detail-inner { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+  @media (max-width: 700px) { .detail-inner { grid-template-columns: 1fr; } }
+  .detail-header { display: flex; align-items: center; gap: 16px; margin-bottom: 20px; padding-bottom: 16px; border-bottom: 0.5px solid rgba(44,44,42,0.1); }
+  .detail-avatar { width: 48px; height: 48px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 16px; font-weight: 500; }
+  .detail-name { font-size: 18px; font-weight: 500; color: #2C2C2A; }
+  .detail-meta { font-size: 12px; color: rgba(44,44,42,0.5); margin-top: 2px; }
+  .close-btn { margin-left: auto; font-size: 12px; color: rgba(44,44,42,0.4); cursor: pointer; border: 0.5px solid rgba(44,44,42,0.2); border-radius: 6px; padding: 4px 10px; background: none; }
+  .close-btn:hover { color: #2C2C2A; border-color: rgba(44,44,42,0.4); }
+
+  .strategy-list { display: flex; flex-direction: column; gap: 8px; margin-bottom: 20px; }
+  .strategy-row { display: flex; align-items: center; gap: 12px; padding: 10px 12px; background: #F5F3EE; border-radius: 8px; }
+  .strategy-name { font-size: 13px; color: #2C2C2A; flex: 1; min-width: 0; word-break: break-word; }
+  .fluency-bar-wrap { width: 80px; height: 6px; background: rgba(44,44,42,0.1); border-radius: 3px; }
+  .fluency-bar { height: 6px; border-radius: 3px; }
+  .fluency-score { font-size: 11px; color: rgba(44,44,42,0.5); min-width: 30px; text-align: right; }
+  .strategy-status { font-size: 10px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.06em; padding: 2px 8px; border-radius: 10px; }
+  .status-mastered { background: rgba(74,103,65,0.12); color: #4A6741; }
+  .status-consistent { background: rgba(240,180,41,0.12); color: #c49010; }
+  .status-trying { background: rgba(44,44,42,0.08); color: rgba(44,44,42,0.5); }
+
+  .badge-journey { margin-top: 4px; }
+  .journey-label { font-size: 11px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.08em; color: rgba(44,44,42,0.4); margin-bottom: 10px; }
+  .journey-track { display: flex; align-items: center; gap: 0; overflow-x: auto; padding-bottom: 4px; }
+  .journey-step { display: flex; flex-direction: column; align-items: center; gap: 4px; min-width: 72px; }
+  .journey-circle {
+    width: 28px; height: 28px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 11px; font-weight: 500;
+    border: 2px solid rgba(44,44,42,0.15);
+    color: rgba(44,44,42,0.3);
+    background: #fff;
+    position: relative; z-index: 1;
+  }
+  .journey-circle.earned { background: #F0B429; border-color: #F0B429; color: #2C2C2A; }
+  .journey-circle.current { background: #fff; border-color: #F0B429; color: #F0B429; }
+  .journey-step-label { font-size: 10px; color: rgba(44,44,42,0.4); text-align: center; line-height: 1.3; }
+  .journey-step-label.earned { color: #2C2C2A; font-weight: 500; }
+  .journey-step-label.current { color: #F0B429; font-weight: 500; }
+  .journey-line { height: 2px; flex: 1; background: rgba(44,44,42,0.1); min-width: 16px; }
+  .journey-line.earned { background: #F0B429; }
+
+  .info-box { background: rgba(240,180,41,0.08); border: 1px solid rgba(240,180,41,0.2); border-radius: 10px; padding: 14px 16px; margin-top: 16px; }
+  .info-box-title { font-size: 12px; font-weight: 500; color: #c49010; margin-bottom: 4px; }
+  .info-box-body { font-size: 12px; color: rgba(44,44,42,0.65); line-height: 1.6; }
+
+  .verify-info { background: rgba(74,103,65,0.06); border: 1px solid rgba(74,103,65,0.2); border-radius: 10px; padding: 14px 16px; margin-top: 10px; }
+  .verify-title { font-size: 12px; font-weight: 500; color: #4A6741; margin-bottom: 4px; }
+  .verify-body { font-size: 12px; color: rgba(44,44,42,0.65); line-height: 1.6; }
+
+  .chart-wrap { height: 160px; position: relative; }
+
+  .demo-label { text-align: center; font-size: 11px; color: rgba(44,44,42,0.35); padding: 12px 0 0; letter-spacing: 0.04em; }
+</style>
+</head>
+<body>
+
+<div class="dash-header">
+  <div class="dash-header-left">
+    <span class="dash-school">Sample school dashboard</span>
+    <span class="dash-title">Lincoln Elementary — Phase 1</span>
+  </div>
+  <span class="dash-badge">2025–2026 school year</span>
+</div>
+
+<div class="dash-body">
+
+  <div class="stats-row">
+    <div class="stat-card">
+      <div class="stat-label">Teachers enrolled</div>
+      <div class="stat-value">6</div>
+      <div class="stat-sub">Lincoln Elementary</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Total check-ins</div>
+      <div class="stat-value">45</div>
+      <div class="stat-sub">Sept 2025 – Mar 2026</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Strategies at fluency</div>
+      <div class="stat-value">15</div>
+      <div class="stat-sub">Confidence rated 8+</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Avg confidence</div>
+      <div class="stat-value">6.2</div>
+      <div class="stat-sub">School-wide, out of 10</div>
+    </div>
+  </div>
+
+  <div class="two-col">
+    <div class="card">
+      <div class="card-eyebrow">School-wide trend</div>
+      <div class="card-title">Average confidence over time</div>
+      <div class="chart-wrap">
+        <canvas id="trendChart"></canvas>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-eyebrow">Badge distribution</div>
+      <div class="card-title">Teacher fluency journey</div>
+      <div style="display:flex;flex-direction:column;gap:10px;margin-top:4px;">
+        <div style="display:flex;align-items:center;gap:10px;">
+          <span style="font-size:13px;color:#2C2C2A;flex:1;">Wayfinder</span>
+          <div style="height:8px;background:#4A6741;border-radius:4px;width:66%;"></div>
+          <span style="font-size:12px;color:rgba(44,44,42,0.5);min-width:20px;">2</span>
+        </div>
+        <div style="display:flex;align-items:center;gap:10px;">
+          <span style="font-size:13px;color:#2C2C2A;flex:1;">Trailblazer</span>
+          <div style="height:8px;background:#F0B429;border-radius:4px;width:66%;"></div>
+          <span style="font-size:12px;color:rgba(44,44,42,0.5);min-width:20px;">2</span>
+        </div>
+        <div style="display:flex;align-items:center;gap:10px;">
+          <span style="font-size:13px;color:#2C2C2A;flex:1;">The Spark</span>
+          <div style="height:8px;background:rgba(44,44,42,0.15);border-radius:4px;width:66%;"></div>
+          <span style="font-size:12px;color:rgba(44,44,42,0.5);min-width:20px;">2</span>
+        </div>
+        <div style="margin-top:8px;padding-top:12px;border-top:0.5px solid rgba(44,44,42,0.1);">
+          <div style="font-size:11px;color:rgba(44,44,42,0.5);line-height:1.6;">Badges are earned through self-reported fluency (8+ confidence) and verified by a site leader, coach, or certified teacher leader.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div style="margin-bottom:12px;">
+    <div class="card-eyebrow" style="margin-bottom:8px;">Teacher roster</div>
+    <div style="font-size:13px;color:rgba(44,44,42,0.55);margin-bottom:12px;">Click any teacher to explore their fluency journey and strategy progress.</div>
+  </div>
+
+  <div class="teacher-grid" id="teacherGrid"></div>
+
+  <div class="detail-panel" id="detailPanel">
+    <div class="detail-header" id="detailHeader"></div>
+    <div class="detail-inner">
+      <div>
+        <div class="card-eyebrow" style="margin-bottom:10px;">Strategy fluency</div>
+        <div class="strategy-list" id="strategyList"></div>
+      </div>
+      <div>
+        <div class="badge-journey" id="badgeJourney"></div>
+        <div class="info-box">
+          <div class="info-box-title">How fluency works</div>
+          <div class="info-box-body">A teacher reaches fluency when they rate their confidence at 8 or higher on a 1–10 scale. This means they can implement the strategy consistently and adapt it to their classroom context.</div>
+        </div>
+        <div class="verify-info">
+          <div class="verify-title">Verification process</div>
+          <div class="verify-body">Fluency is verified through classroom observation by a site leader, instructional coach, or a certified teacher leader — a peer who has reached verified fluency in 5+ strategies including the one being observed.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <p class="demo-label">Sample data — Lincoln Elementary · The ARC Model™ by Your Classroom Academy</p>
+</div>
+
+<script>
+const MARIGOLD = '#F0B429';
+const GREEN = '#4A6741';
+const SLATE = '#2C2C2A';
+
+const teachers = [
+  {
+    id: 1, name: 'Priya M.', initials: 'PM', color: '#4A6741', textColor: '#fff',
+    badge: 'wayfinder', checkins: 6, fluencies: 5,
+    strategies: [
+      { name: 'Think-Ink-Pair-Share', score: 10, status: 'mastered' },
+      { name: 'Notice & Wonder', score: 8, status: 'mastered' },
+      { name: '4 Corners', score: 8, status: 'mastered' },
+      { name: 'Jigsaw', score: 9, status: 'mastered' },
+      { name: '3-2-1 Reflection', score: 8, status: 'mastered' },
+      { name: 'Exit Ticket', score: 6, status: 'consistent' },
+    ]
+  },
+  {
+    id: 2, name: 'David R.', initials: 'DR', color: '#4A6741', textColor: '#fff',
+    badge: 'wayfinder', checkins: 6, fluencies: 5,
+    strategies: [
+      { name: 'Think-Ink-Pair-Share', score: 7, status: 'consistent' },
+      { name: 'Notice & Wonder', score: 5, status: 'consistent' },
+      { name: 'Exit Ticket', score: 9, status: 'mastered' },
+      { name: '4 Corners', score: 8, status: 'mastered' },
+      { name: 'Jigsaw', score: 8, status: 'mastered' },
+      { name: '3-2-1 Reflection', score: 8, status: 'mastered' },
+    ]
+  },
+  {
+    id: 3, name: 'Maria G.', initials: 'MG', color: '#F0B429', textColor: '#2C2C2A',
+    badge: 'trailblazer', checkins: 10, fluencies: 3,
+    strategies: [
+      { name: 'Think-Ink-Pair-Share', score: 8, status: 'mastered' },
+      { name: 'Exit Ticket', score: 9, status: 'mastered' },
+      { name: 'Notice & Wonder', score: 7, status: 'consistent' },
+      { name: '3-2-1 Reflection', score: 7, status: 'consistent' },
+      { name: '4 Corners', score: 3, status: 'trying' },
+    ]
+  },
+  {
+    id: 4, name: 'Sarah K.', initials: 'SK', color: '#F0B429', textColor: '#2C2C2A',
+    badge: 'trailblazer', checkins: 7, fluencies: 3,
+    strategies: [
+      { name: 'Think-Ink-Pair-Share', score: 9, status: 'mastered' },
+      { name: 'Exit Ticket', score: 9, status: 'mastered' },
+      { name: '4 Corners', score: 7, status: 'consistent' },
+      { name: 'Jigsaw', score: 3, status: 'trying' },
+    ]
+  },
+  {
+    id: 5, name: 'James T.', initials: 'JT', color: 'rgba(44,44,42,0.12)', textColor: '#2C2C2A',
+    badge: 'spark', checkins: 9, fluencies: 1,
+    strategies: [
+      { name: 'Think-Ink-Pair-Share', score: 6, status: 'consistent' },
+      { name: 'Dice Breakers', score: 6, status: 'consistent' },
+      { name: 'Jigsaw', score: 5, status: 'consistent' },
+      { name: 'Exit Ticket', score: 7, status: 'consistent' },
+    ]
+  },
+  {
+    id: 6, name: 'Thomas B.', initials: 'TB', color: 'rgba(44,44,42,0.12)', textColor: '#2C2C2A',
+    badge: 'spark', checkins: 4, fluencies: 1,
+    strategies: [
+      { name: 'Think-Ink-Pair-Share', score: 6, status: 'consistent' },
+      { name: 'Dice Breakers', score: 5, status: 'consistent' },
+    ]
+  }
+];
+
+const badges = [
+  { name: 'The Spark', req: 1 },
+  { name: 'Trailblazer', req: 3 },
+  { name: 'Wayfinder', req: 5 },
+  { name: 'Pathmaker', req: 7 },
+  { name: 'The Guide', req: 10 },
+  { name: 'Certified Coach', req: 15 },
+  { name: 'Bridgebuilder', req: 20 },
+];
+
+const badgeLabels = { wayfinder: 'Wayfinder', trailblazer: 'Trailblazer', spark: 'The Spark' };
+
+function getBadgeClass(badge) {
+  return badge === 'wayfinder' ? 'badge-wayfinder' : badge === 'trailblazer' ? 'badge-trailblazer' : 'badge-spark';
+}
+
+function renderTeacherGrid() {
+  const grid = document.getElementById('teacherGrid');
+  grid.innerHTML = teachers.map(t => `
+    <div class="teacher-card" id="tc-${t.id}" onclick="showTeacher(${t.id})">
+      <div class="teacher-avatar" style="background:${t.color};color:${t.textColor};">${t.initials}</div>
+      <div class="teacher-name">${t.name}</div>
+      <div class="teacher-checkins">${t.checkins} check-ins · ${t.fluencies} at fluency</div>
+      <span class="badge-pill ${getBadgeClass(t.badge)}">
+        <span class="badge-dot"></span>${badgeLabels[t.badge]}
+      </span>
+    </div>
+  `).join('');
+}
+
+function showTeacher(id) {
+  const t = teachers.find(x => x.id === id);
+  document.querySelectorAll('.teacher-card').forEach(c => c.classList.remove('active'));
+  document.getElementById('tc-' + id).classList.add('active');
+
+  const panel = document.getElementById('detailPanel');
+  panel.classList.add('visible');
+
+  document.getElementById('detailHeader').innerHTML = `
+    <div class="detail-avatar" style="background:${t.color};color:${t.textColor};">${t.initials}</div>
+    <div>
+      <div class="detail-name">${t.name}</div>
+      <div class="detail-meta">${t.checkins} check-ins · ${t.fluencies} strategies at fluency · <span style="font-weight:500;color:${t.badge==='wayfinder'?GREEN:t.badge==='trailblazer'?MARIGOLD:'rgba(44,44,42,0.5)'}">${badgeLabels[t.badge]}</span></div>
+    </div>
+    <button class="close-btn" onclick="closeDetail()">Close</button>
+  `;
+
+  document.getElementById('strategyList').innerHTML = t.strategies.map(s => {
+    const pct = Math.round((s.score / 10) * 100);
+    const barColor = s.status === 'mastered' ? GREEN : s.status === 'consistent' ? MARIGOLD : 'rgba(44,44,42,0.2)';
+    const statusClass = s.status === 'mastered' ? 'status-mastered' : s.status === 'consistent' ? 'status-consistent' : 'status-trying';
+    const statusLabel = s.status === 'mastered' ? 'At fluency' : s.status === 'consistent' ? 'Consistent' : 'Trying';
+    return `
+      <div class="strategy-row">
+        <span class="strategy-name">${s.name}</span>
+        <div class="fluency-bar-wrap"><div class="fluency-bar" style="width:${pct}%;background:${barColor};"></div></div>
+        <span class="fluency-score">${s.score}/10</span>
+        <span class="strategy-status ${statusClass}">${statusLabel}</span>
+      </div>
+    `;
+  }).join('');
+
+  const earnedIdx = badges.findLastIndex(b => t.fluencies >= b.req);
+  const nextIdx = earnedIdx + 1;
+
+  let journeyHTML = `<div class="journey-label">Badge journey — Phase 1</div><div class="journey-track">`;
+  badges.forEach((b, i) => {
+    const earned = t.fluencies >= b.req;
+    const current = i === nextIdx;
+    const circleClass = earned ? 'earned' : current ? 'current' : '';
+    const labelClass = earned ? 'earned' : current ? 'current' : '';
+    const lineClass = i < badges.length - 1 ? (earned ? 'journey-line earned' : 'journey-line') : '';
+    journeyHTML += `
+      <div class="journey-step">
+        <div class="journey-circle ${circleClass}">${earned ? '✓' : b.req}</div>
+        <div class="journey-step-label ${labelClass}">${b.name}</div>
+      </div>
+      ${i < badges.length - 1 ? `<div class="${lineClass}"></div>` : ''}
+    `;
+  });
+  journeyHTML += `</div>`;
+  if (nextIdx < badges.length) {
+    const needed = badges[nextIdx].req - t.fluencies;
+    journeyHTML += `<div style="font-size:12px;color:rgba(44,44,42,0.5);margin-top:8px;">${needed} more ${needed === 1 ? 'strategy' : 'strategies'} at fluency to earn <strong style="color:#2C2C2A;">${badges[nextIdx].name}</strong></div>`;
+  }
+  document.getElementById('badgeJourney').innerHTML = journeyHTML;
+
+  panel.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+}
+
+function closeDetail() {
+  document.getElementById('detailPanel').classList.remove('visible');
+  document.querySelectorAll('.teacher-card').forEach(c => c.classList.remove('active'));
+}
+
+function renderTrendChart() {
+  const ctx = document.getElementById('trendChart').getContext('2d');
+  new Chart(ctx, {
+    type: 'line',
+    data: {
+      labels: ['Sep', 'Oct', 'Nov', 'Dec', 'Jan', 'Feb', 'Mar'],
+      datasets: [{
+        data: [3.2, 4.1, 4.8, 5.2, 6.5, 7.1, 7.8],
+        borderColor: MARIGOLD,
+        backgroundColor: 'rgba(240,180,41,0.08)',
+        borderWidth: 2,
+        pointBackgroundColor: MARIGOLD,
+        pointRadius: 4,
+        fill: true,
+        tension: 0.4
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: { legend: { display: false } },
+      scales: {
+        y: {
+          min: 0, max: 10,
+          grid: { color: 'rgba(44,44,42,0.06)' },
+          ticks: { font: { size: 11 }, color: 'rgba(44,44,42,0.4)', stepSize: 2 }
+        },
+        x: {
+          grid: { display: false },
+          ticks: { font: { size: 11 }, color: 'rgba(44,44,42,0.4)' }
+        }
+      }
+    }
+  });
+}
+
+renderTeacherGrid();
+renderTrendChart();
+</script>
+</body>
+</html>
