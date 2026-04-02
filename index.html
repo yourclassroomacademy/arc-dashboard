@@ -1,0 +1,549 @@
+<!DOCTYPE html><!-- v17.3 -->
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Confident Classroom</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{--arc:#534AB7;--arc-light:#EEEDFE;--arc-dark:#26215C;--teal:#1D9E75;--teal-light:#E1F5EE;--amber:#BA7517;--amber-light:#FAEEDA;--text:#1a1a2e;--text-sec:#6b6b80;--text-ter:#a0a0b0;--bg:#fafafa;--card:#ffffff;--border:#e8e8f0;--radius:12px;--radius-lg:20px;}
+body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min-height:100vh}
+.nav{background:var(--arc-dark);padding:0 1.5rem;display:flex;align-items:center;justify-content:space-between;height:56px;position:sticky;top:0;z-index:100}
+.nav-logo{font-family:'DM Serif Display',serif;font-size:18px;color:#fff}
+.nav-logo em{font-style:italic;opacity:0.8}
+.nav-right{display:flex;align-items:center;gap:10px}
+.nav-user{font-size:13px;color:rgba(255,255,255,0.7)}
+.nav-tab{padding:6px 14px;border-radius:20px;font-size:12px;color:rgba(255,255,255,0.6);cursor:pointer;font-family:'DM Sans',sans-serif;border:none;background:transparent}
+.nav-tab.active{background:rgba(255,255,255,0.15);color:#fff}
+.nav-btn{padding:6px 14px;border-radius:20px;border:1px solid rgba(255,255,255,0.3);background:transparent;color:rgba(255,255,255,0.8);font-size:12px;cursor:pointer;font-family:'DM Sans',sans-serif}
+.nav-btn:hover{background:rgba(255,255,255,0.1)}
+.page{max-width:920px;margin:0 auto;padding:2rem 1.5rem}
+.section{margin-bottom:2rem}
+.section-title{font-size:18px;font-weight:500;color:var(--text);margin-bottom:1rem}
+.card{background:var(--card);border:0.5px solid var(--border);border-radius:var(--radius-lg);padding:1.25rem;margin-bottom:1rem}
+.metrics{display:grid;grid-template-columns:repeat(auto-fit,minmax(110px,1fr));gap:12px;margin-bottom:1.5rem}
+.metric{background:var(--bg);border-radius:var(--radius);padding:1rem}
+.metric-label{font-size:12px;color:var(--text-sec);margin-bottom:6px}
+.metric-value{font-size:24px;font-weight:500;color:var(--text)}
+.badge{display:inline-block;padding:2px 8px;border-radius:10px;font-size:11px;font-weight:500}
+.badge-teal{background:#E1F5EE;color:#085041}
+.badge-blue{background:#E6F1FB;color:#0C447C}
+.badge-amber{background:#FAEEDA;color:#633806}
+.badge-gray{background:#F1EFE8;color:#5F5E5A}
+.badge-purple{background:#EEEDFE;color:#3C3489}
+.badge-coaching{background:#FAEEDA;color:#633806}
+.strat-pill{display:inline-flex;align-items:center;padding:3px 10px;border-radius:10px;font-size:12px;font-weight:500}
+.strategy-row{display:flex;align-items:center;padding:11px 16px;border-bottom:0.5px solid var(--border);gap:10px;flex-wrap:wrap}
+.strategy-row:last-child{border-bottom:none}
+.bar-bg{flex:1;height:6px;background:var(--bg);border-radius:3px;min-width:60px}
+.table-card{background:var(--card);border:0.5px solid var(--border);border-radius:var(--radius-lg);overflow:hidden;margin-bottom:1rem}
+.group-header{padding:10px 16px;background:var(--bg);font-size:13px;font-weight:500;color:var(--text);border-bottom:0.5px solid var(--border);display:flex;align-items:center;justify-content:space-between}
+.charts-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:1.5rem}
+.chart-card{background:var(--card);border:0.5px solid var(--border);border-radius:var(--radius-lg);padding:1rem}
+.chart-label{font-size:13px;font-weight:500;color:var(--text-sec);margin-bottom:12px}
+.chart-wrap{position:relative;width:100%;height:180px}
+.login-wrap{max-width:440px;margin:0 auto;padding:4rem 1.5rem;text-align:center}
+.email-input{width:100%;padding:12px 16px;border-radius:var(--radius);border:1px solid var(--border);font-size:14px;font-family:'DM Sans',sans-serif;color:var(--text);background:var(--card);outline:none;transition:border-color 0.2s;margin-bottom:10px}
+.email-input:focus{border-color:var(--arc)}
+.btn-arc{padding:11px 24px;border-radius:var(--radius);border:none;background:var(--arc);cursor:pointer;font-size:13px;font-weight:500;color:#fff;font-family:'DM Sans',sans-serif;transition:opacity 0.15s}
+.btn-arc:hover{opacity:0.9}
+.btn-arc:disabled{opacity:0.5;cursor:not-allowed}
+.btn-outline{padding:11px 20px;border-radius:var(--radius);border:0.5px solid var(--border);background:transparent;cursor:pointer;font-size:13px;font-weight:500;color:var(--text-sec);font-family:'DM Sans',sans-serif}
+.btn-outline:hover{background:var(--bg)}
+.spinner{width:24px;height:24px;border:2px solid var(--border);border-top-color:var(--arc);border-radius:50%;animation:spin 0.7s linear infinite;margin:0 auto 12px}
+@keyframes spin{to{transform:rotate(360deg)}}
+.loading{text-align:center;padding:3rem;color:var(--text-sec);font-size:14px}
+.prog-bar{height:3px;background:var(--border);border-radius:2px;margin-bottom:2.5rem;overflow:hidden}
+.prog-fill{height:100%;background:var(--arc);border-radius:2px;transition:width 0.5s}
+.eyebrow{font-size:12px;font-weight:500;color:var(--arc);letter-spacing:0.08em;text-transform:uppercase;margin-bottom:8px}
+.survey-title{font-family:'DM Serif Display',serif;font-size:28px;color:var(--text);margin-bottom:8px;line-height:1.25}
+.survey-title em{font-style:italic;color:var(--arc)}
+.survey-sub{font-size:14px;color:var(--text-sec);line-height:1.6;margin-bottom:1.5rem}
+.strat-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:1.25rem;margin-bottom:10px;transition:border-color 0.2s}
+.strat-card.rated{border-color:var(--arc)}
+.strat-name{font-size:14px;font-weight:500;color:var(--text);margin-bottom:2px}
+.strat-desc-s{font-size:12px;color:var(--text-ter);margin-bottom:12px}
+.rating-track{display:flex;gap:3px;margin-bottom:8px}
+.rating-btn{flex:1;height:32px;border-radius:6px;border:1px solid var(--border);background:transparent;cursor:pointer;font-size:11px;font-weight:500;color:var(--text-ter);transition:all 0.15s;font-family:'DM Sans',sans-serif}
+.rating-btn:hover{border-color:var(--arc);color:var(--arc);background:var(--arc-light)}
+.rating-btn.sel{color:#fff}
+.rating-fb{display:flex;align-items:center;gap:8px;min-height:20px;flex-wrap:wrap;font-size:12px}
+.scale-legend{display:flex;gap:0;margin-bottom:16px;border-radius:8px;overflow:hidden;border:1px solid var(--border)}
+.scale-legend-item{flex:1;padding:5px 2px;text-align:center;font-size:10px;font-weight:500;line-height:1.3}
+.goal-opt{display:flex;align-items:flex-start;gap:12px;padding:12px 14px;border:1px solid var(--border);border-radius:var(--radius);margin-bottom:8px;cursor:pointer;transition:all 0.15s;background:var(--card)}
+.goal-opt:hover{border-color:var(--arc);background:var(--arc-light)}
+.goal-opt.sel{border-color:var(--arc);background:var(--arc-light)}
+.goal-check{width:20px;height:20px;border-radius:50%;border:1.5px solid var(--border);display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px;transition:all 0.15s}
+.goal-opt.sel .goal-check{background:var(--arc);border-color:var(--arc)}
+.check-inner{width:8px;height:8px;border-radius:50%;background:#fff;opacity:0}
+.goal-opt.sel .check-inner{opacity:1}
+.month-tag{display:inline-flex;align-items:center;gap:6px;padding:4px 12px;border-radius:20px;background:var(--arc-light);color:var(--arc);font-size:11px;font-weight:500;margin-bottom:10px;margin-top:6px}
+.trail-wrap{position:relative;margin:8px 0 28px}
+.trail-bar{height:8px;background:var(--bg);border-radius:4px;position:relative}
+.trail-fill{height:8px;border-radius:4px;background:var(--arc);transition:width 0.6s}
+.trail-dot{position:absolute;top:50%;transform:translate(-50%,-50%);width:14px;height:14px;border-radius:50%;border:2px solid}
+.trail-labels{display:flex;justify-content:space-between;margin-top:12px}
+.trail-label{font-size:10px;text-align:center;max-width:52px;line-height:1.3}
+.filter-bar{display:flex;align-items:center;gap:10px;margin-bottom:1rem;flex-wrap:wrap}
+.filter-bar label{font-size:13px;color:var(--text-sec)}
+.school-card{background:var(--card);border:0.5px solid var(--border);border-radius:var(--radius-lg);padding:1.25rem;margin-bottom:1.5rem}
+.school-stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(100px,1fr));gap:10px;margin-top:12px}
+.school-stat{background:var(--bg);border-radius:var(--radius);padding:10px 12px}
+.school-stat-label{font-size:11px;color:var(--text-sec);margin-bottom:4px}
+.school-stat-value{font-size:20px;font-weight:500;color:var(--text)}
+.donut-row{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:1.5rem}
+.donut-card{background:var(--card);border:0.5px solid var(--border);border-radius:var(--radius-lg);padding:1rem;display:flex;flex-direction:column;align-items:center}
+.donut-wrap{position:relative;width:120px;height:120px;margin:8px auto}
+.donut-center{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);text-align:center}
+.donut-pct{font-size:20px;font-weight:500;color:var(--text)}
+.donut-sub{font-size:10px;color:var(--text-ter)}
+.coaching-alert{background:#FAEEDA;border:0.5px solid #EF9F27;border-radius:var(--radius-lg);padding:1rem 1.25rem;margin-bottom:1.5rem}
+.email-modal{background:var(--card);border:0.5px solid var(--border);border-radius:var(--radius-lg);padding:1.25rem;margin-top:1rem;display:none}
+.email-modal.open{display:block}
+.email-field{font-size:12px;color:var(--text-sec);padding:6px 0;border-bottom:0.5px solid var(--border);display:flex;gap:8px}
+.email-field:last-of-type{border-bottom:none;margin-bottom:12px}
+.email-body{font-size:13px;color:var(--text);line-height:1.7;background:var(--bg);border-radius:var(--radius);padding:1rem}
+.goal-edit-panel{background:var(--bg);border-radius:var(--radius-lg);padding:1.25rem;margin-top:1rem;display:none}
+.goal-edit-panel.open{display:block}
+.goal-progress-row{padding:10px 0;border-bottom:0.5px solid var(--border)}
+.goal-progress-row:last-child{border-bottom:none}
+.goal-bar-bg{height:8px;background:var(--bg);border-radius:4px;margin-top:6px}
+.reflection-card{background:var(--bg);border-radius:var(--radius);padding:12px;margin-top:8px;font-size:12px;color:var(--text-sec);line-height:1.6}
+.divider{height:1px;background:var(--border);margin:1.5rem 0}
+.update-chip{font-size:11px;color:var(--teal);background:var(--teal-light);border-radius:10px;padding:2px 8px;margin-left:6px;font-weight:500}
+.err-msg{font-size:12px;color:#D85A30;margin-top:6px;display:none}
+select{font-family:'DM Sans',sans-serif;font-size:13px;padding:6px 10px;border-radius:var(--radius);border:0.5px solid var(--border);background:var(--card);color:var(--text);outline:none}
+</style>
+</head>
+<body>
+<div id="app"></div>
+<script src="/js/api.js"></script>
+<script>
+const BLUE="#378ADD",TEAL="#1D9E75",CORAL="#D85A30",AMBER="#BA7517",PURPLE="#534AB7",GREEN="#639922",GRAY="#888780";
+const stratColors={"4 Corners":BLUE,"Exit Ticket":TEAL,"Jigsaw":CORAL,"Think-Ink-Pair-Share":AMBER,"3-2-1 Reflection":PURPLE,"Dice Breakers":GREEN,"Notice & Wonder":BLUE,"One Pagers":PURPLE,"Read-Mark-Explain":TEAL,"Gist Read":GREEN,"I Do-We Do-You Do":AMBER,"10-2-2 System":BLUE,"Note-Taking Formats":CORAL,"Would You Rather":AMBER,"Classroom BINGO":BLUE,"Inquiry Cube":PURPLE};
+const stratPill={"4 Corners":{bg:"#E6F1FB",c:"#0C447C"},"Exit Ticket":{bg:"#E1F5EE",c:"#085041"},"Jigsaw":{bg:"#FAECE7",c:"#712B13"},"Think-Ink-Pair-Share":{bg:"#FAEEDA",c:"#633806"},"3-2-1 Reflection":{bg:"#EEEDFE",c:"#3C3489"},"Dice Breakers":{bg:"#EAF3DE",c:"#27500A"},"Notice & Wonder":{bg:"#E6F1FB",c:"#0C447C"},"One Pagers":{bg:"#EEEDFE",c:"#3C3489"},"Read-Mark-Explain":{bg:"#E1F5EE",c:"#085041"},"Gist Read":{bg:"#EAF3DE",c:"#27500A"},"I Do-We Do-You Do":{bg:"#FAEEDA",c:"#633806"},"10-2-2 System":{bg:"#E6F1FB",c:"#0C447C"},"Note-Taking Formats":{bg:"#FAECE7",c:"#712B13"},"Would You Rather":{bg:"#FAEEDA",c:"#633806"},"Classroom BINGO":{bg:"#E6F1FB",c:"#0C447C"},"Inquiry Cube":{bg:"#EEEDFE",c:"#3C3489"}};
+const BOY_STRATS=[
+  {name:"Would You Rather",desc:"Students choose between two options and explain their reasoning",month:"Month 1",theme:"Creating Classroom Community"},
+  {name:"Dice Breakers",desc:"Dice-prompted conversations that warm up the room",month:"Month 1",theme:"Creating Classroom Community"},
+  {name:"Classroom BINGO",desc:"Students find peers who match descriptors on a BINGO card",month:"Month 1",theme:"Creating Classroom Community"},
+  {name:"Think-Ink-Pair-Share",desc:"Think individually, write, then discuss with a partner",month:"Month 2",theme:"Introduction to Inquiry"},
+  {name:"Notice & Wonder",desc:"Students share observations and questions about a prompt",month:"Month 2",theme:"Introduction to Inquiry"},
+  {name:"Inquiry Cube",desc:"A hands-on tool to explore topics through multiple inquiry lenses",month:"Month 2",theme:"Introduction to Inquiry"},
+  {name:"4 Corners",desc:"Students move to corners based on their response to a question",month:"Month 3",theme:"Structured Collaboration"},
+  {name:"Jigsaw",desc:"Collaborative learning where students become experts and teach peers",month:"Month 3",theme:"Structured Collaboration"},
+];
+const ALL_STRATS=["Would You Rather","Dice Breakers","Classroom BINGO","Think-Ink-Pair-Share","Notice & Wonder","Inquiry Cube","4 Corners","Jigsaw","Read-Mark-Explain","Gist Read","I Do-We Do-You Do","10-2-2 System","Note-Taking Formats","1 Word 2 Words","One Pagers","Say Something","Popular Opinion","3-2-1 Reflection","Exit Ticket","Student Showcase"];
+const LEVELS=[
+  {min:0,max:0,label:"Never tried",desc:"Haven't used this strategy yet",color:"#888780",bg:"#F1EFE8"},
+  {min:1,max:3,label:"Attempted",desc:"Tried once or twice but didn't go as planned",color:"#D85A30",bg:"#FAECE7"},
+  {min:4,max:5,label:"Developing",desc:"Used a few times, starting to refine",color:"#BA7517",bg:"#FAEEDA"},
+  {min:6,max:7,label:"Comfortable",desc:"Use consistently but couldn't yet coach others",color:"#378ADD",bg:"#E6F1FB"},
+  {min:8,max:9,label:"Proficient",desc:"Can adapt across lessons and support colleagues",color:"#1D9E75",bg:"#E1F5EE"},
+  {min:10,max:10,label:"Fluent",desc:"Use confidently across any content and can coach others",color:"#534AB7",bg:"#EEEDFE"},
+];
+const GOALS_LIST=[
+  {id:"spark",label:"Earn The Spark badge",sub:"Get my first verified fluency"},
+  {id:"explorer",label:"Become an Explorer",sub:"Try a new strategy every month"},
+  {id:"trailblazer",label:"Earn Trailblazer status",sub:"Reach verified fluency in 3 strategies"},
+  {id:"fluency5",label:"Reach fluency in 5 strategies",sub:"A strong mid-year milestone"},
+  {id:"fluency7",label:"Reach fluency in 7 strategies",sub:"Going deep this year"},
+  {id:"fluency10",label:"Earn The Guide badge",sub:"10 verified strategies — become a teacher leader"},
+  {id:"leader",label:"Become a Certified Coach",sub:"15 verified strategies"},
+];
+const MILESTONES=[
+  {label:"The Spark",count:1,color:"#EF9F27"},{label:"Trailblazer",count:3,color:"#534AB7"},
+  {label:"Wayfinder",count:5,color:"#1D9E75"},{label:"Pathmaker",count:7,color:"#D85A30"},
+  {label:"The Guide",count:10,color:"#378ADD"},{label:"Certified Coach",count:15,color:"#639922"},
+  {label:"Bridgebuilder",count:20,color:"#993556"},
+];
+const DATES=["3/21/2026","3/22/2026","3/23/2026","3/24/2026","3/27/2026"];
+const SCHOOLS_DATA={
+  "All schools":{grades:"All grades",teachers:149,admins:7,circleLogin:61,baselineDone:42,baselineTotal:149},
+  "Anzar High School":{grades:"9-12",teachers:17,admins:3,circleLogin:72,baselineDone:12,baselineTotal:17},
+  "Calaveras Elementary":{grades:"TK-8",teachers:21,admins:2,circleLogin:58,baselineDone:14,baselineTotal:21},
+  "Lewis Flamson Jr High School":{grades:"7-8",teachers:39,admins:1,circleLogin:55,baselineDone:22,baselineTotal:39},
+  "Rancho San Justo Middle School":{grades:"6-8",teachers:34,admins:1,circleLogin:65,baselineDone:19,baselineTotal:34},
+  "Freeman Elementary":{grades:"TK-6",teachers:18,admins:2,circleLogin:70,baselineDone:10,baselineTotal:18},
+  "Lincoln High School":{grades:"9-12",teachers:8,admins:1,circleLogin:75,baselineDone:6,baselineTotal:8},
+  "Westside Elementary":{grades:"TK-6",teachers:6,admins:1,circleLogin:83,baselineDone:5,baselineTotal:6},
+  "Central Middle School":{grades:"6-8",teachers:4,admins:1,circleLogin:50,baselineDone:2,baselineTotal:4},
+  "Eastview High School":{grades:"9-12",teachers:5,admins:1,circleLogin:60,baselineDone:3,baselineTotal:5},
+};
+const state={user:null,view:'login',ci:[],st:[],pt:[],step:0,sRatings:{},sGoals:[],sOptIn:false,ch:{}};
+const fld=(r,...keys)=>{for(const k of keys){if(r.fields&&r.fields[k]!==undefined){const v=r.fields[k];return Array.isArray(v)?v[0]:v;}}return undefined;};
+const getL=(v)=>LEVELS.find(l=>v>=l.min&&v<=l.max)||LEVELS[0];
+const avg=(arr)=>arr.length?+(arr.reduce((a,b)=>a+b,0)/arr.length).toFixed(1):0;
+const isAdmin=(role)=>['Admin','Coach'].includes(role);
+const pill=(s)=>stratPill[s]||{bg:'#F1EFE8',c:'#5F5E5A'};
+const color=(s)=>stratColors[s]||GRAY;
+const pname=(r)=>{const sk=r.fields&&(r.fields['Status Key']||r.fields['Check-In Name']);if(!sk)return'';const sep=sk.includes(' | ')?' | ':' – ';return sk.split(sep)[0].trim();};
+const pstrat=(r)=>{const sk=r.fields&&(r.fields['Status Key']||r.fields['Check-In Name']);if(!sk)return'';const sep=sk.includes(' | ')?' | ':' – ';const parts=sk.split(sep);return parts.length>1?parts.slice(1).join(sep).trim():'';};
+const pschool=(r)=>{const s=r.fields&&r.fields['School'];if(!s)return'';return Array.isArray(s)?s[0]:s;};
+const fmtDate=(d)=>{if(!d)return null;if(d.includes('/'))return d;const[y,m,day]=d.split('-');return`${parseInt(m)}/${parseInt(day)}/${y}`;};
+function nc(teacher,strat,ci){
+  const pts=ci.filter(c=>(pname(c)===teacher||pname(c).startsWith(teacher+','))&&pstrat(c)===strat);
+  if(!pts.length)return false;
+  return pts.sort((a,b)=>new Date(fld(b,'Date'))-new Date(fld(a,'Date')))[0].fields['Confidence Rating']<=4;
+}
+function destroyCh(){Object.values(state.ch).forEach(c=>{try{c.destroy();}catch(e){}});state.ch={};}
+
+function render(){
+  destroyCh();
+  const app=document.getElementById('app');
+  if(state.view==='login')app.innerHTML=vLogin();
+  else if(state.view==='loading')app.innerHTML='<div class="loading"><div class="spinner"></div>Loading your dashboard...</div>';
+  
+  else if(state.view==='teacher')app.innerHTML=navH()+vTeacher();
+  else if(state.view==='leadership')app.innerHTML=navH()+vLeadership();
+  bind();
+}
+
+function navH(){
+  const u=state.user;
+  const tabs=isAdmin(u?.role)?`<button class="nav-tab ${state.view==='leadership'?'active':''}" onclick="go('leadership')">Leadership</button><button class="nav-tab ${state.view==='teacher'?'active':''}" onclick="go('teacher')">My dashboard</button>`:'';
+  return`<div class="nav"><div class="nav-logo">The <em>Confident</em> Classroom</div><div class="nav-right">${tabs}<span class="nav-user">${u?.name||''}</span><button class="nav-btn" onclick="logout()">Sign out</button></div></div>`;
+}
+function go(v){state.view=v;render();}
+
+function vLogin(){
+  return`<div class="login-wrap">
+    <div style="width:64px;height:64px;border-radius:20px;background:var(--arc-light);display:flex;align-items:center;justify-content:center;margin:0 auto 1.5rem"><svg width="32" height="32" viewBox="0 0 32 32" fill="none"><path d="M16 7L19.5 13L26.5 14.2L21.2 19.3L22.5 26.5L16 23L9.5 26.5L10.8 19.3L5.5 14.2L12.5 13L16 7Z" stroke="#534AB7" stroke-width="1.5" fill="#EEEDFE"/></svg></div>
+    <div class="survey-title">The <em>Confident</em> Classroom</div>
+    <div class="survey-sub">Enter your school email to access your dashboard.</div>
+    <input class="email-input" type="email" id="loginEmail" placeholder="yourname@school.edu"/>
+    <div class="err-msg" id="loginErr"></div>
+    <button class="btn-arc" style="width:100%" id="loginBtn" onclick="doLogin()">Access my dashboard →</button>
+    <div style="margin-top:1rem;font-size:12px;color:var(--text-ter)">New here? Your admin will send you an invite.</div>
+  </div>`;
+}
+
+async function doLogin(){
+  const email=document.getElementById('loginEmail')?.value?.trim().toLowerCase();
+  const err=document.getElementById('loginErr');const btn=document.getElementById('loginBtn');
+  if(!email||!email.includes('@')){if(err){err.style.display='block';err.textContent='Please enter a valid email address.';}return;}
+  if(btn){btn.disabled=true;btn.textContent='Looking you up...';}
+  if(err)err.style.display='none';
+  state.view='loading';render();
+  try{
+    const p=await api.getParticipantByEmail(email);
+    if(!p){
+      state.view='login';render();
+      setTimeout(()=>{const e=document.getElementById('loginErr');const b=document.getElementById('loginBtn');if(e){e.style.display='block';e.textContent="We couldn't find that email. Please check with your admin.";}if(b){b.disabled=false;b.textContent='Access my dashboard →';}},50);
+      return;
+    }
+    const f=p.fields;
+    state.user={recordId:p.id,name:f['Name']||'',email:f['Email']||email,role:f['Role']||'Teacher',school:f['School']||'',baselineDone:f['Baseline Done']||false,goals:f['Goals']||[]};
+    localStorage.setItem('cc_user',JSON.stringify(state.user));
+    await loadData();
+    state.view=isAdmin(state.user.role)?'leadership':'teacher';
+    render();
+  }catch(e){
+    state.view='login';render();
+    setTimeout(()=>{const er=document.getElementById('loginErr');const bt=document.getElementById('loginBtn');if(er){er.style.display='block';er.textContent='Something went wrong. Please try again.';}if(bt){bt.disabled=false;bt.textContent='Access my dashboard →';}},50);
+  }
+}
+
+async function loadData(){
+  try{const[ci,st,pt]=await Promise.all([api.getAllCheckIns(),api.getAllStrategyStatuses(),api.getAllParticipants()]);state.ci=ci;state.st=st;state.pt=pt;}
+  catch(e){state.ci=[];state.st=[];state.pt=[];}
+}
+function logout(){localStorage.removeItem('cc_user');state.user=null;state.view='login';render();}
+
+// BASELINE
+function vBaseline(){
+  const pct=Math.round(state.step/4*100);
+  return`<div class="page" style="max-width:640px"><div class="prog-bar"><div class="prog-fill" style="width:${pct}%"></div></div>${state.step===0?bWelcome():state.step===1?bConfirm():state.step===2?bStrategies():state.step===3?bGoals():bDone()}</div>`;
+}
+function bWelcome(){
+  return`<div style="text-align:center;padding:1rem 0 2rem">
+    <div style="width:64px;height:64px;border-radius:20px;background:var(--arc-light);display:flex;align-items:center;justify-content:center;margin:0 auto 1.5rem"><svg width="32" height="32" viewBox="0 0 32 32" fill="none"><path d="M16 7L19.5 13L26.5 14.2L21.2 19.3L22.5 26.5L16 23L9.5 26.5L10.8 19.3L5.5 14.2L12.5 13L16 7Z" stroke="#534AB7" stroke-width="1.5" fill="#EEEDFE"/></svg></div>
+    <div class="eyebrow">Beginning of year — Months 1-3</div>
+    <div class="survey-title">Welcome to The <em>Confident</em> Classroom</div>
+    <div class="survey-sub" style="max-width:420px;margin:12px auto 1.5rem">This baseline survey takes about 5 minutes. Rate your confidence on 8 strategies and set your goals for the year.</div>
+    <div class="card" style="text-align:left;margin-bottom:1.5rem">${[["1","Confirm your school email"],["2","Rate 8 strategies (Months 1-3)"],["3","Set your goals for this year"]].map(([n,t])=>`<div style="display:flex;align-items:center;gap:10px;font-size:13px;color:var(--text);margin-bottom:8px"><div style="width:28px;height:28px;border-radius:8px;background:var(--arc-light);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:500;color:var(--arc);flex-shrink:0">${n}</div>${t}</div>`).join('')}</div>
+    <button class="btn-arc" onclick="state.step=1;render()">Let's begin →</button>
+  </div>`;
+}
+function bConfirm(){
+  const u=state.user;
+  return`<div><div class="eyebrow">Step 1 of 3</div><div class="survey-title">Confirming it's <em>you</em></div><div class="survey-sub">We found your account. Ready to continue?</div>
+    <div class="card"><div style="font-size:14px;font-weight:500;color:var(--text);margin-bottom:4px">${u?.name}</div><div style="font-size:13px;color:var(--text-sec)">${u?.email}</div><div style="font-size:13px;color:var(--text-sec);margin-top:2px">${u?.school}</div></div>
+    <div style="display:flex;gap:10px;margin-top:1rem"><button class="btn-outline" onclick="logout()">Not me</button><button class="btn-arc" onclick="state.step=2;render()">Yes, that's me →</button></div>
+  </div>`;
+}
+function bStrategies(){
+  return`<div><div class="eyebrow">Step 2 of 3</div><div class="survey-title">How confident are you with each <em>strategy?</em></div>
+    <div class="survey-sub">Rate yourself from 0 (never tried) to 10 (fully fluent).</div>
+    <div class="scale-legend">${LEVELS.map(l=>`<div class="scale-legend-item" style="background:${l.bg};color:${l.color}">${l.label}</div>`).join('')}</div>
+    ${BOY_STRATS.map((s,i)=>{
+      const val=state.sRatings[s.name];const hasVal=val!==undefined;const lv=hasVal?getL(val):null;
+      const showTag=i===0||BOY_STRATS[i-1].month!==s.month;
+      const tag=showTag?`<div class="month-tag">${s.month}: ${s.theme}</div>`:'';
+      const btns=[0,1,2,3,4,5,6,7,8,9,10].map(n=>{const blv=getL(n);const sel=val===n;return`<button class="rating-btn${sel?' sel':''}" style="${sel?`background:${blv.color};border-color:${blv.color}`:''}" onclick="setR(${i},${n})">${n}</button>`;}).join('');
+      return`${tag}<div class="strat-card${hasVal?' rated':''}" id="sc${i}"><div class="strat-name">${s.name}</div><div class="strat-desc-s">${s.desc}</div><div class="rating-track" id="rt${i}">${btns}</div><div class="rating-fb" id="fb${i}">${hasVal?`<span style="width:8px;height:8px;border-radius:50%;background:${lv.color};display:inline-block;flex-shrink:0"></span><span style="color:${lv.color};font-weight:500">${val} — ${lv.label}:</span><span style="color:var(--text-sec);margin-left:4px">${lv.desc}</span>`:'<span style="color:var(--text-ter)">Select a number to rate your confidence</span>'}</div></div>`;
+    }).join('')}
+    <div style="display:flex;gap:10px;margin-top:1.5rem"><button class="btn-outline" onclick="state.step=1;render()">Back</button><button class="btn-arc" style="margin-left:auto" onclick="state.step=3;render()">Continue →</button></div>
+  </div>`;
+}
+function bGoals(){
+  return`<div><div class="eyebrow">Step 3 of 3</div><div class="survey-title">What are your <em>goals</em> for this year?</div><div class="survey-sub">Select as many as feel right. You can update these anytime from your dashboard.</div>
+    <div style="background:var(--arc-light);border-radius:var(--radius);padding:1rem;margin-bottom:1rem;font-size:13px;color:var(--arc-dark)">
+      <div style="font-weight:500;margin-bottom:6px">Verification opt-in</div>
+      <div style="font-size:12px;color:var(--text-sec);margin-bottom:10px">Once you rate yourself 8 or above on a strategy, a member of your leadership team can visit your classroom and verify your fluency. This is completely optional — would you like to be considered for observations this year?</div>
+      <div style="display:flex;gap:10px">
+        <div id="optInYes" class="goal-opt" style="flex:1;padding:10px 14px" onclick="setOptIn(true)"><div class="goal-check"><div class="check-inner"></div></div><div style="font-size:13px;color:var(--text)">Yes, I'd like to be observed</div></div>
+        <div id="optInNo" class="goal-opt" style="flex:1;padding:10px 14px" onclick="setOptIn(false)"><div class="goal-check"><div class="check-inner"></div></div><div style="font-size:13px;color:var(--text)">Not this year</div></div>
+      </div>
+    </div>
+    ${GOALS_LIST.map(g=>{const sel=state.sGoals.includes(g.id);return`<div class="goal-opt${sel?' sel':''}" onclick="toggleSG('${g.id}')"><div class="goal-check"><div class="check-inner"></div></div><div><div style="font-size:13px;color:var(--text)">${g.label}</div><div style="font-size:11px;color:var(--text-ter);margin-top:2px">${g.sub}</div></div></div>`;}).join('')}
+    <div style="display:flex;gap:10px;margin-top:1.5rem"><button class="btn-outline" onclick="state.step=2;render()">Back</button><button class="btn-arc" style="margin-left:auto" onclick="submitB()">Complete survey →</button></div>
+  </div>`;
+}
+function bDone(){
+  const rated=Object.keys(state.sRatings).length;const avgR=rated?avg(Object.values(state.sRatings)):0;
+  return`<div style="text-align:center;padding:2rem 0">
+    <div style="width:72px;height:72px;border-radius:50%;background:var(--teal-light);display:flex;align-items:center;justify-content:center;margin:0 auto 1.5rem"><svg width="36" height="36" viewBox="0 0 36 36" fill="none"><path d="M8 18L15 25L28 11" stroke="#1D9E75" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+    <div class="eyebrow">Survey complete</div>
+    <div class="survey-title">You're on the path, <em>${state.user?.name||'teacher'}!</em></div>
+    <div class="survey-sub" style="max-width:400px;margin:8px auto 1.5rem">Your baseline is saved. Your dashboard is now active!</div>
+    <div style="display:flex;gap:12px;justify-content:center;margin-bottom:1.5rem;flex-wrap:wrap">
+      ${[['Strategies rated',rated],['Avg confidence',avgR+'/10'],['Goals set',state.sGoals.length]].map(([l,v])=>`<div style="background:var(--bg);border-radius:12px;padding:14px 20px;text-align:center"><div style="font-size:22px;font-weight:500;color:var(--arc)">${v}</div><div style="font-size:11px;color:var(--text-ter);margin-top:2px">${l}</div></div>`).join('')}
+    </div>
+    <button class="btn-arc" onclick="afterBaseline()">Go to my dashboard →</button>
+  </div>`;
+}
+function setR(i,val){
+  const s=BOY_STRATS[i];state.sRatings[s.name]=val;const lv=getL(val);
+  document.getElementById('sc'+i)?.classList.add('rated');
+  const track=document.getElementById('rt'+i);if(track)track.querySelectorAll('.rating-btn').forEach((btn,j)=>{const sel=j===val;const blv=getL(j);btn.className='rating-btn'+(sel?' sel':'');btn.style=sel?`background:${blv.color};border-color:${blv.color}`:''});
+  const fb=document.getElementById('fb'+i);if(fb)fb.innerHTML=`<span style="width:8px;height:8px;border-radius:50%;background:${lv.color};display:inline-block;flex-shrink:0"></span><span style="color:${lv.color};font-weight:500">${val} — ${lv.label}:</span><span style="color:var(--text-sec);margin-left:4px">${lv.desc}</span>`;
+}
+function toggleSG(id){
+  const idx=state.sGoals.indexOf(id);if(idx>=0)state.sGoals.splice(idx,1);else state.sGoals.push(id);
+  document.querySelectorAll('.goal-opt').forEach(el=>{const m=el.getAttribute('onclick')?.match(/'([^']+)'/);if(m){const active=state.sGoals.includes(m[1]);el.classList.toggle('sel',active);const ci2=el.querySelector('.check-inner');const ch=el.querySelector('.goal-check');if(ci2)ci2.style.opacity=active?'1':'0';if(ch){ch.style.background=active?'var(--arc)':'';ch.style.borderColor=active?'var(--arc)':''}}});
+}
+function setOptIn(val){
+  state.sOptIn=val;
+  const yes=document.getElementById('optInYes');
+  const no=document.getElementById('optInNo');
+  if(yes&&no){
+    yes.classList.toggle('sel',val===true);
+    no.classList.toggle('sel',val===false);
+    [yes,no].forEach(el=>{
+      const ci2=el.querySelector('.check-inner');
+      const ch=el.querySelector('.goal-check');
+      const active=el.id==='optInYes'?val===true:val===false;
+      if(ci2)ci2.style.opacity=active?'1':'0';
+      if(ch){ch.style.background=active?'var(--arc)':'';ch.style.borderColor=active?'var(--arc)':'';}
+    });
+  }
+}
+async function submitB(){
+  state.step=4;render();
+  try{await api.saveBaseline(state.user.recordId,state.sRatings,state.sGoals,state.sOptIn);state.user.baselineDone=true;state.user.goals=state.sGoals;state.user.optIn=state.sOptIn;localStorage.setItem('cc_user',JSON.stringify(state.user));}
+  catch(e){console.warn('Baseline save failed',e);}
+}
+async function afterBaseline(){await loadData();state.view='teacher';render();}
+
+// TEACHER
+function vTeacher(){
+  const u=state.user;
+  const mySt=state.st.filter(r=>pname(r)===u.name||pname(r).startsWith(u.name+','));
+  const myCi=state.ci.filter(c=>pname(c)===u.name||pname(c).startsWith(u.name+','));
+  const verified=mySt.filter(r=>fld(r,'Verified Fluency')===true||fld(r,'Verified Fluency')===1).length;
+  const selfF=mySt.filter(r=>fld(r,'Fluency Achieved')==='Yes').length;
+  const next=MILESTONES.find(m=>m.count>verified);
+  let h=`<div class="page">`;
+  h+=`<div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;margin-bottom:1.5rem"><div><div style="font-size:22px;font-weight:500;color:var(--text)">${u.name}</div><div style="font-size:13px;color:var(--text-sec);margin-top:2px">${u.school}</div></div><div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
+    ${u.optIn?'<span style="font-size:12px;color:var(--teal);background:var(--teal-light);padding:4px 10px;border-radius:10px">Opted in for observations</span>':''}
+    <a href="https://airtable.com/appJYT4i1gCkT422k" target="_blank" style="text-decoration:none"><button class="btn-outline">Log a check-in →</button></a>
+  </div></div>`;
+  h+=`<div class="metrics"><div class="metric"><div class="metric-label">Strategies tried</div><div class="metric-value">${mySt.length}</div></div><div class="metric"><div class="metric-label">Self fluency</div><div class="metric-value">${selfF}</div></div><div class="metric"><div class="metric-label">Verified fluency</div><div class="metric-value">${verified}</div></div><div class="metric"><div class="metric-label">Check-ins</div><div class="metric-value">${myCi.length}</div></div></div>`;
+  // Journey
+  h+=`<div class="card"><div style="font-size:13px;font-weight:500;color:var(--text-sec);margin-bottom:16px">Your ARC journey — Phase 1</div><div class="trail-wrap"><div class="trail-bar" style="position:relative"><div class="trail-fill" style="width:${Math.min(selfF/20*100,100)}%;opacity:0.4"></div><div class="trail-fill" style="width:${Math.min(verified/20*100,100)}%;position:absolute;top:0;left:0"></div>${MILESTONES.map(m=>{const pos=Math.min(m.count/20*100,100);const isVerified=verified>=m.count;const isSelf=selfF>=m.count&&!isVerified;return`<div class="trail-dot" style="left:${pos}%;background:${isVerified?m.color:isSelf?m.color+'40':'var(--card)'};border:2px ${isSelf?'dashed':'solid'} ${isVerified||isSelf?m.color:'var(--border)'}"></div>`;}).join('')}</div><div class="trail-labels">${MILESTONES.map(m=>`<div class="trail-label" style="color:${verified>=m.count?'var(--text)':'var(--text-ter)'};font-weight:${verified>=m.count?'500':'400'}">${m.label}</div>`).join('')}</div></div>
+    <div style="padding-top:12px;border-top:0.5px solid var(--border)"><div style="font-size:12px;color:var(--text-sec);margin-bottom:8px">Earned badges</div><div style="display:flex;flex-wrap:wrap;gap:8px">${(()=>{
+  const earned=MILESTONES.filter(m=>verified>=m.count||selfF>=m.count);
+  if(!earned.length)return'<span style="font-size:12px;color:var(--text-ter)">No badges yet — log your first check-in!</span>';
+  return earned.map(m=>{
+    const isVerified=verified>=m.count;
+    return`<div style="display:inline-flex;align-items:center;gap:6px;padding:6px 12px;border-radius:20px;border:1.5px ${isVerified?'solid':'dashed'} ${m.color};background:${isVerified?m.color+'18':m.color+'0D'};font-size:12px;font-weight:500;color:${isVerified?m.color:m.color+'99'}"><span style="width:8px;height:8px;border-radius:50%;background:${isVerified?m.color:m.color+'60'};display:inline-block"></span>${m.label}</div>`;
+  }).join('');
+})()}</div></div>
+    ${(()=>{
+  const nextSelf=MILESTONES.find(m=>m.count>selfF);
+  const nextVerif=MILESTONES.find(m=>m.count>verified);
+  if(!nextSelf&&!nextVerif)return'';
+  if(nextVerif&&nextSelf&&nextVerif.label!==nextSelf.label){
+    return`<div style="margin-top:10px;font-size:12px;color:var(--text-sec)">${nextSelf.count-selfF} more self fluency to earn <strong style="color:var(--text)">${nextSelf.label}</strong> · ${nextVerif.count-verified} verified to solidify it</div>`;
+  }
+  if(nextVerif){
+    return`<div style="margin-top:10px;font-size:12px;color:var(--text-sec)">${nextVerif.count-verified} more verified ${nextVerif.count-verified===1?'strategy':'strategies'} to solidify <strong style="color:var(--text)">${nextVerif.label}</strong></div>`;
+  }
+  return'';
+})()}
+  </div>`;
+  // Goals
+  const goals=u.goals||[];const progMap={spark:{cur:Math.min(verified,1),tot:1},explorer:{cur:1,tot:1,ph:true},trailblazer:{cur:Math.min(verified,3),tot:3},fluency5:{cur:Math.min(verified,5),tot:5},fluency7:{cur:Math.min(verified,7),tot:7},fluency10:{cur:Math.min(verified,10),tot:10},leader:{cur:Math.min(verified,15),tot:15}};
+  h+=`<div class="card"><div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:${goals.length?'1rem':'0'}"><div style="font-size:13px;font-weight:500;color:var(--text-sec)">My goals</div><button class="btn-outline" style="font-size:12px;padding:6px 12px" onclick="document.getElementById('gep').classList.toggle('open')">Update my goals</button></div>
+    <div id="gprog">${goals.length?goals.map(id=>{const g=GOALS_LIST.find(x=>x.id===id);const p=progMap[id];if(!g||!p)return'';const pct=Math.min(Math.round(p.cur/p.tot*100),100);return`<div class="goal-progress-row"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px"><span style="font-size:13px;color:var(--text)">${g.label}</span><span style="font-size:12px;color:var(--text-sec)">${p.ph?'Active':`${p.cur}/${p.tot}`}</span></div>${!p.ph?`<div class="goal-bar-bg"><div style="height:8px;border-radius:4px;background:var(--arc);width:${pct}%"></div></div>`:`<div style="font-size:11px;color:#085041">On track this month</div>`}</div>`;}).join(''):'<div style="font-size:13px;color:var(--text-ter)">No goals set yet.</div>'}</div>
+    <div class="goal-edit-panel" id="gep">${GOALS_LIST.map(g=>`<div class="goal-opt${goals.includes(g.id)?' sel':''}" onclick="toggleDG('${g.id}')"><div class="goal-check"><div class="check-inner"></div></div><div><div style="font-size:13px;color:var(--text)">${g.label}</div><div style="font-size:11px;color:var(--text-ter)">${g.sub}</div></div></div>`).join('')}<div style="margin-top:12px;display:flex;justify-content:flex-end"><button class="btn-arc" onclick="saveG()">Save goals</button></div></div>
+  </div>`;
+  // Charts
+  h+=`<div class="section"><div class="section-title">Strategy progress</div><div class="charts-grid"><div class="chart-card"><div class="chart-label">Confidence by strategy</div><div class="chart-wrap"><canvas id="tc1"></canvas></div></div><div class="chart-card"><div class="chart-label">Confidence over time</div><div id="tcleg" style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:6px"></div><div class="chart-wrap"><canvas id="tc2"></canvas></div></div></div>`;
+  // Strategies table
+  h+=`<div class="table-card"><div style="padding:10px 16px;background:var(--bg);border-bottom:0.5px solid var(--border);font-size:13px;font-weight:500">All strategies</div>`;
+  ALL_STRATS.slice(0,8).forEach(s=>{
+    const row=mySt.find(r=>pstrat(r)===s);
+    const ps=pill(s);const coaching=row&&nc(u.name,s,myCi);
+    const best=row?fld(row,'Highest Rating')||0:0;
+    const lastDate=myCi.filter(c=>pstrat(c)===s).map(c=>fld(c,'Date')).filter(Boolean).sort().pop()||null;
+    let sb='<span class="badge badge-gray">Not tried</span>';
+    if(coaching)sb='<span class="badge badge-coaching">Needs coaching</span>';
+    else if(row&&fld(row,'Validated Mastery'))sb='<span class="badge badge-teal">Verified fluency</span>';
+    else if(row&&fld(row,'Self Mastered'))sb='<span class="badge badge-blue">Self fluency</span>';
+    else if(row)sb='<span class="badge badge-gray">In progress</span>';
+    h+=`<div class="strategy-row" style="${coaching?'background:#FAEEDA22;border-left:3px solid #EF9F27':''}"><span class="strat-pill" style="background:${ps.bg};color:${ps.c};min-width:160px">${s}</span><div class="bar-bg"><div style="height:6px;border-radius:3px;background:${coaching?'#EF9F27':color(s)};width:${best*10}%"></div></div><span style="font-size:12px;color:var(--text-sec);min-width:36px">${best?best+'/10':'—'}</span><span style="font-size:12px;color:var(--text-ter);min-width:64px">${lastDate||'—'}</span>${sb}</div>`;
+  });
+  h+=`</div></div>`;
+  // Reflections
+  const refs=myCi.filter(c=>fld(c,'Win')||fld(c,'Challenge'));
+  if(refs.length){h+=`<div class="section"><div class="section-title">Recent reflections</div>`;refs.slice(0,3).forEach(r=>{const strat=pstrat(r)||'';const ps=pill(strat);h+=`<div class="card"><div style="display:flex;align-items:center;gap:8px;margin-bottom:8px"><span class="strat-pill" style="background:${ps.bg};color:${ps.c}">${strat}</span><span style="font-size:12px;color:var(--text-ter)">${fld(r,'Date')||''}</span></div>${fld(r,'Win')?`<div class="reflection-card"><span style="font-weight:500;color:var(--text)">What went well:</span> ${fld(r,'Win')}</div>`:''}${fld(r,'Challenge')?`<div class="reflection-card" style="margin-top:6px"><span style="font-weight:500;color:var(--text)">Challenges:</span> ${fld(r,'Challenge')}</div>`:''}</div>`;});h+=`</div>`;}
+  h+=`</div>`;
+  return h;
+}
+function toggleDG(id){
+  const goals=state.user.goals||[];const idx=goals.indexOf(id);if(idx>=0)goals.splice(idx,1);else goals.push(id);state.user.goals=goals;
+  document.querySelectorAll('#gep .goal-opt').forEach(el=>{const m=el.getAttribute('onclick')?.match(/'([^']+)'/);if(m){const active=goals.includes(m[1]);el.classList.toggle('sel',active);const ci2=el.querySelector('.check-inner');const ch=el.querySelector('.goal-check');if(ci2)ci2.style.opacity=active?'1':'0';if(ch){ch.style.background=active?'var(--arc)':'';ch.style.borderColor=active?'var(--arc)':''}}});
+}
+async function saveG(){
+  document.getElementById('gep')?.classList.remove('open');
+  const mySt=state.st.filter(r=>pname(r)===state.user.name||pname(r).startsWith(state.user.name+','));
+  const verified=mySt.filter(r=>fld(r,'Verified Fluency')===true||fld(r,'Verified Fluency')===1).length;
+  const progMap={spark:{cur:Math.min(verified,1),tot:1},explorer:{cur:1,tot:1,ph:true},trailblazer:{cur:Math.min(verified,3),tot:3},fluency5:{cur:Math.min(verified,5),tot:5},fluency7:{cur:Math.min(verified,7),tot:7},fluency10:{cur:Math.min(verified,10),tot:10},leader:{cur:Math.min(verified,15),tot:15}};
+  const goals=state.user.goals||[];
+  document.getElementById('gprog').innerHTML=goals.length?goals.map(id=>{const g=GOALS_LIST.find(x=>x.id===id);const p=progMap[id];if(!g||!p)return'';const pct=Math.min(Math.round(p.cur/p.tot*100),100);return`<div class="goal-progress-row"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px"><span style="font-size:13px;color:var(--text)">${g.label}</span><span style="font-size:12px;color:var(--text-sec)">${p.ph?'Active':`${p.cur}/${p.tot}`}</span></div>${!p.ph?`<div class="goal-bar-bg"><div style="height:8px;border-radius:4px;background:var(--arc);width:${pct}%"></div></div>`:`<div style="font-size:11px;color:#085041">On track this month</div>`}</div>`;}).join(''):'<div style="font-size:13px;color:var(--text-ter)">No goals set yet.</div>';
+  localStorage.setItem('cc_user',JSON.stringify(state.user));
+  try{await api.updateRecord('Participants',state.user.recordId,{'Goals':goals});}catch(e){}
+}
+
+// LEADERSHIP
+function vLeadership(){
+  const defaultSchool=isAdmin(state.user?.role)&&state.user?.school?state.user.school:'All schools';
+  const school=document.getElementById('schoolFilter')?.value||defaultSchool;
+  const ci=school==='All schools'?state.ci:state.ci.filter(c=>pschool(c)===school);
+  const st=school==='All schools'?state.st:state.st.filter(s=>pschool(s)===school);
+  const sd=SCHOOLS_DATA[school]||SCHOOLS_DATA['All schools'];
+  const STRATS=["4 Corners","Exit Ticket","Jigsaw","Think-Ink-Pair-Share"];
+  const cols=STRATS.map(s=>color(s));
+  const byT={};st.forEach(r=>{const t=pname(r);if(t){if(!byT[t])byT[t]=[];byT[t].push(r);}});
+  const leaders=Object.keys(byT).filter(t=>byT[t].filter(r=>fld(r,'Verified Fluency')).length>=3);
+  const baseP=sd.baselineTotal?Math.round(sd.baselineDone/sd.baselineTotal*100):0;
+  const THIS_WEEK=["3/24/2026","3/27/2026"];
+  const wkTeachers=[...new Set(st.filter(r=>(fld(r,'Fluency Achieved')==='Yes')&&THIS_WEEK.includes(fmtDate(fld(r,'Last Check-In Date'))||'')).map(r=>pname(r)).filter(Boolean))];
+  const flagged=st.filter(r=>{const t=pname(r);const s=pstrat(r);return t&&s&&nc(t,s,ci);});
+
+  let h=`<div class="page">`;
+  h+=`<div class="filter-bar"><label>Filter by school:</label><select id="schoolFilter" onchange="render()">${Object.keys(SCHOOLS_DATA).map(s=>`<option value="${s}" ${s===school?'selected':''}>${s}</option>`).join('')}</select></div>`;
+  // School card
+  h+=`<div class="school-card"><div style="display:flex;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;gap:8px"><div><div style="font-size:18px;font-weight:500;color:var(--text)">${school}</div><div style="font-size:12px;color:var(--text-sec);margin-top:2px">${sd.grades}</div></div>${leaders.length?`<span class="badge badge-purple" style="font-size:12px;padding:4px 12px">${leaders.length} teacher leader${leaders.length>1?'s':''}</span>`:''}</div><div class="school-stats"><div class="school-stat"><div class="school-stat-label">Teachers</div><div class="school-stat-value">${sd.teachers}</div></div><div class="school-stat"><div class="school-stat-label">Admin</div><div class="school-stat-value">${sd.admins}</div></div><div class="school-stat"><div class="school-stat-label">Teacher leaders</div><div class="school-stat-value">${leaders.length}</div></div><div class="school-stat"><div class="school-stat-label">Baseline complete</div><div class="school-stat-value">${sd.baselineDone}/${sd.baselineTotal}</div></div></div></div>`;
+  // Donuts
+  h+=`<div class="section"><div class="section-title">Participation overview</div><div class="donut-row"><div class="donut-card"><div class="chart-label" style="align-self:flex-start">Baseline survey completion</div><div class="donut-wrap"><canvas id="d1"></canvas><div class="donut-center"><div class="donut-pct">${baseP}%</div><div class="donut-sub">completed</div></div></div></div><div class="donut-card"><div class="chart-label" style="align-self:flex-start">Circle logins this week</div><div class="donut-wrap"><canvas id="d2"></canvas><div class="donut-center"><div class="donut-pct">${sd.circleLogin}%</div><div class="donut-sub">logged in</div></div></div></div></div></div>`;
+  // Weekly badges
+  h+=`<div class="section"><div class="section-title">Weekly fluency badges</div><div style="font-size:12px;color:var(--text-sec);margin-bottom:12px">Teachers who reached self fluency or verified fluency this week</div><div style="display:flex;flex-wrap:wrap;gap:8px">${wkTeachers.length?wkTeachers.map(t=>`<div style="display:inline-flex;align-items:center;gap:6px;padding:6px 12px;border-radius:20px;border:0.5px solid var(--border);background:var(--card);font-size:12px;font-weight:500"><span style="width:8px;height:8px;border-radius:50%;background:#1D9E75;display:inline-block"></span>${t}</div>`).join(''):'<span style="font-size:13px;color:var(--text-ter)">No new fluency recorded this week.</span>'}</div></div>`;
+  // Metrics + charts
+  // Build "Ready for observation" section
+  // Need participants who opted in - check pt array for Verification Opt-In
+  const optedInNames=new Set(state.pt.filter(p=>p.fields&&p.fields['Verification Opt-In']===true).map(p=>p.fields['Name']).filter(Boolean));
+  const readyForObs={};
+  st.forEach(r=>{
+    const t=pname(r);const s=pstrat(r);const best=fld(r,'Highest Rating')||0;
+    const achieved=fld(r,'Fluency Achieved')==='Yes';const verified=!!fld(r,'Verified Fluency');
+    if(t&&s&&best>=8&&achieved&&!verified&&optedInNames.has(t)){
+      if(!readyForObs[t])readyForObs[t]=[];
+      readyForObs[t].push(s);
+    }
+  });
+  const readyTeachers=Object.keys(readyForObs);
+  h+=`<div class="section"><div class="section-title">Ready for observation</div>`;
+  if(readyTeachers.length){
+    h+=`<div style="font-size:12px;color:var(--text-sec);margin-bottom:12px">${readyTeachers.length} teacher${readyTeachers.length>1?'s':''} opted in and ready to be observed</div>`;
+    h+=`<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:12px;margin-bottom:1rem">`;
+    readyTeachers.forEach(t=>{
+      const strats=readyForObs[t];
+      h+=`<div style="background:var(--card);border:1.5px dashed #1D9E75;border-radius:var(--radius-lg);padding:1rem">
+        <div style="font-size:13px;font-weight:500;color:var(--text);margin-bottom:8px">${t}</div>
+        <div style="display:flex;flex-wrap:wrap;gap:4px">${strats.map(s=>{const ps=stratPill[s]||{bg:'#F1EFE8',c:'#5F5E5A'};return`<span class="strat-pill" style="background:${ps.bg};color:${ps.c};font-size:11px;padding:2px 8px">${s}</span>`;}).join('')}</div>
+      </div>`;
+    });
+    h+=`</div>`;
+  } else {
+    h+=`<div style="background:var(--bg);border-radius:var(--radius-lg);padding:1.25rem;font-size:13px;color:var(--text-ter);margin-bottom:1rem">No teachers are currently awaiting observation.</div>`;
+  }
+  h+=`</div>`;
+
+  h+=`<div class="section"><div class="section-title">Check-ins</div><div class="metrics"><div class="metric"><div class="metric-label">Total check-ins</div><div class="metric-value">${ci.length}</div></div><div class="metric"><div class="metric-label">Avg confidence</div><div class="metric-value">${avg(ci.map(c=>fld(c,'Confidence Rating')).filter(v=>v!==undefined))}</div></div><div class="metric"><div class="metric-label">Avg engagement</div><div class="metric-value">${avg(ci.map(c=>fld(c,'Student Engagement')).filter(v=>v!==undefined))}</div></div><div class="metric"><div class="metric-label">Avg impact</div><div class="metric-value">${avg(ci.map(c=>fld(c,'Perceived Impact')).filter(v=>v!==undefined))}</div></div></div>`;
+  h+=`<div class="charts-grid"><div class="chart-card"><div class="chart-label">Strategy usage</div><div class="chart-wrap"><canvas id="c1"></canvas></div></div><div class="chart-card"><div class="chart-label">Avg confidence by strategy</div><div class="chart-wrap"><canvas id="c2"></canvas></div></div><div class="chart-card"><div class="chart-label">Avg engagement by strategy</div><div class="chart-wrap"><canvas id="c3"></canvas></div></div><div class="chart-card"><div class="chart-label">Avg impact by strategy</div><div class="chart-wrap"><canvas id="c4"></canvas></div></div></div>`;
+  h+=`<div class="chart-card"><div class="chart-label">Check-ins over time</div><div style="position:relative;width:100%;height:200px"><canvas id="c5"></canvas></div></div></div>`;
+  // Coaching alerts
+  if(flagged.length){
+    h+=`<div class="section"><div class="section-title">Coaching alerts</div><div class="coaching-alert"><div style="font-size:13px;font-weight:500;color:#633806;margin-bottom:8px">⚠ ${flagged.length} teacher${flagged.length>1?'s':''} may need support</div>`;
+    flagged.forEach((r,i)=>{const t=pname(r);const s=pstrat(r);const sch=fld(r,'School')||school;const latest=ci.filter(c=>pname(c)===t&&pstrat(c)===s).sort((a,b)=>new Date(fld(b,'Date'))-new Date(fld(a,'Date')))[0];h+=`<div style="font-size:12px;color:#854F0B;padding:4px 0;border-bottom:0.5px solid #EF9F2733;display:flex;justify-content:space-between;align-items:center"><span><strong style="color:#412402">${t}</strong> — ${s}</span><span style="display:flex;align-items:center;gap:8px"><span>Confidence: ${fld(latest,'Confidence Rating')||'?'}/10</span><button onclick="document.getElementById('em${i}').classList.toggle('open')" style="font-size:11px;padding:3px 10px;border-radius:8px;border:0.5px solid #EF9F27;background:transparent;color:#633806;cursor:pointer">View email ↓</button></span></div><div class="email-modal" id="em${i}"><div class="email-field"><strong>To:</strong> Leadership — ${sch}</div><div class="email-field"><strong>Re:</strong> Coaching support needed — ${t}</div><div class="email-body">Hi,<br><br>This is an automated notification from The Confident Classroom.<br><br><strong>${t}</strong> submitted a check-in for <strong>${s}</strong> with a confidence rating of <strong>${fld(latest,'Confidence Rating')||'?'}/10</strong>, indicating they may benefit from coaching support.<br><br>— The Confident Classroom</div></div>`;});
+    h+=`</div></div>`;
+  }
+  // Strategy status table
+  h+=`<div class="section"><div class="section-title">Strategy status</div><div class="table-card">`;
+  if(Object.keys(byT).length){Object.keys(byT).sort().forEach(t=>{const rows=byT[t];const isL=rows.filter(r=>fld(r,'Verified Fluency')).length>=3;const hasF=rows.some(r=>nc(t,pstrat(r),ci));h+=`<div class="group-header"><span>${t}${hasF?` <span class="badge badge-coaching">Needs coaching</span>`:''}${isL?` <span class="badge badge-purple">Teacher leader</span>`:''}</span><span style="font-weight:400;color:var(--text-ter);font-size:12px">${rows.length} strategies</span></div>`;rows.forEach(r=>{const s=pstrat(r)||'';const ps=pill(s);const best=fld(r,'Highest Rating')||0;const coaching=nc(t,s,ci);const ver=!!fld(r,'Verified Fluency');const selF=fld(r,'Fluency Achieved')==='Yes';const best2=fld(r,'Highest Rating')||0;
+      const readyToVerify=!coaching&&!ver&&best2>=8&&fld(r,'Fluency Achieved')==='Yes';
+      const sb=coaching?'<span class="badge badge-coaching">Needs coaching</span>':ver?'<span class="badge badge-teal">Verified fluency</span>':readyToVerify?'<span class="badge" style="background:#E1F5EE;color:#085041;border:1px dashed #1D9E75">Ready to verify</span>':selF?'<span class="badge badge-blue">Fluency achieved</span>':'<span class="badge badge-gray">In progress</span>';h+=`<div class="strategy-row" style="${coaching?'background:#FAEEDA22;border-left:3px solid #EF9F27':''}"><span class="strat-pill" style="background:${ps.bg};color:${ps.c};min-width:140px">${s}</span><div class="bar-bg"><div style="height:6px;border-radius:3px;background:${coaching?'#EF9F27':color(s)};width:${best*10}%"></div></div><span style="font-size:12px;color:var(--text-sec);min-width:36px">${best?best+'/10':'—'}</span>${sb}</div>`;});})}else{h+=`<div style="padding:24px;text-align:center;font-size:13px;color:var(--text-ter)">No strategy data for this school yet.</div>`;}
+  h+=`</div></div>`;
+  // Validation
+  h+=`<div class="section"><div class="section-title">Validation progress</div><div class="table-card">`;
+  if(Object.keys(byT).length){Object.keys(byT).sort().forEach(t=>{const rows=byT[t];h+=`<div class="group-header"><span>${t}</span><span style="font-weight:400;color:var(--text-ter);font-size:12px">${rows.length} strategies</span></div>`;rows.forEach(r=>{const s=pstrat(r)||'';const ps=pill(s);const ver=!!fld(r,'Verified Fluency');const obs=fld(r,'Verified By')||'—';h+=`<div class="strategy-row"><span class="strat-pill" style="background:${ps.bg};color:${ps.c};min-width:140px">${s}</span><span style="flex:1"></span><span class="badge ${ver?'badge-teal':'badge-gray'}" style="margin-right:12px">${ver?'Verified':'Pending'}</span><span style="font-size:12px;color:var(--text-sec)">${obs}</span></div>`;});});}else{h+=`<div style="padding:24px;text-align:center;font-size:13px;color:var(--text-ter)">No validation data yet.</div>`;}
+  h+=`</div></div></div>`;
+  return h;
+}
+
+// CHARTS
+function bind(){
+  const el=document.getElementById('loginEmail');if(el)el.addEventListener('keydown',e=>{if(e.key==='Enter')doLogin();});
+  if(state.view==='leadership')setTimeout(lCharts,100);
+  if(state.view==='teacher')setTimeout(tCharts,100);
+}
+function lCharts(){
+  const school=document.getElementById('schoolFilter')?.value||'All schools';
+  const ci=school==='All schools'?state.ci:state.ci.filter(c=>pschool(c)===school);
+  const sd=SCHOOLS_DATA[school]||SCHOOLS_DATA['All schools'];
+  const STRATS=["4 Corners","Exit Ticket","Jigsaw","Think-Ink-Pair-Share"];
+  const cols=STRATS.map(s=>color(s));
+  function bc(id,data,max){const el=document.getElementById(id);if(!el)return;state.ch[id]=new Chart(el,{type:'bar',data:{labels:STRATS,datasets:[{data,backgroundColor:cols,borderRadius:4,borderSkipped:false}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{ticks:{font:{size:11},maxRotation:30,autoSkip:false}},y:{beginAtZero:true,max:max||10,ticks:{font:{size:11}},grid:{color:'rgba(0,0,0,0.05)'}}}}});}
+  bc('c1',STRATS.map(s=>ci.filter(c=>pstrat(c)===s).length),Math.max(...STRATS.map(s=>ci.filter(c=>pstrat(c)===s).length),1)+2);
+  bc('c2',STRATS.map(s=>avg(ci.filter(c=>pstrat(c)===s).map(c=>fld(c,'Confidence Rating')).filter(v=>v!==undefined))),10);
+  bc('c3',STRATS.map(s=>avg(ci.filter(c=>pstrat(c)===s).map(c=>fld(c,'Student Engagement')).filter(v=>v!==undefined))),5);
+  bc('c4',STRATS.map(s=>avg(ci.filter(c=>pstrat(c)===s).map(c=>fld(c,'Perceived Impact')).filter(v=>v!==undefined))),5);
+  const el5=document.getElementById('c5');if(el5)state.ch['c5']=new Chart(el5,{type:'line',data:{labels:DATES,datasets:[{data:DATES.map(d=>ci.filter(c=>fmtDate(fld(c,'Date'))===d).length),borderColor:BLUE,backgroundColor:'rgba(55,138,221,0.08)',fill:true,tension:0.3,pointRadius:4,pointBackgroundColor:BLUE}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{ticks:{font:{size:11}}},y:{beginAtZero:true,ticks:{stepSize:1,font:{size:11}},grid:{color:'rgba(0,0,0,0.05)'}}}}});
+  ['d1','d2'].forEach((id,i)=>{const el=document.getElementById(id);if(!el)return;const pct=i===0?sd.baselineDone/sd.baselineTotal*100:sd.circleLogin;state.ch[id]=new Chart(el,{type:'doughnut',data:{datasets:[{data:[pct,100-pct],backgroundColor:[i===0?TEAL:BLUE,'#E8EAF0'],borderWidth:0,borderRadius:4}]},options:{responsive:true,maintainAspectRatio:false,cutout:'72%',plugins:{legend:{display:false},tooltip:{enabled:false}}}});});
+}
+function tCharts(){
+  const u=state.user;
+  const mySt=state.st.filter(r=>pname(r)===u.name||pname(r).startsWith(u.name+','));
+  const myCi=state.ci.filter(c=>pname(c)===u.name||pname(c).startsWith(u.name+','));
+  const strats=[...new Set(myCi.map(c=>pstrat(c)).filter(Boolean))];
+  const data=mySt.map(r=>({s:pstrat(r),c:avg(myCi.filter(c=>pstrat(c)===pstrat(r)).map(c=>fld(c,'Confidence Rating')).filter(v=>v!==undefined))}));
+  if(data.length){const el=document.getElementById('tc1');if(el)state.ch['tc1']=new Chart(el,{type:'bar',data:{labels:data.map(d=>d.s),datasets:[{data:data.map(d=>d.c),backgroundColor:data.map(d=>color(d.s)),borderRadius:4,borderSkipped:false}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{ticks:{font:{size:11},maxRotation:30}},y:{beginAtZero:true,max:10,ticks:{font:{size:11}},grid:{color:'rgba(0,0,0,0.05)'}}}}})}
+  if(strats.length){const el=document.getElementById('tc2');if(el){state.ch['tc2']=new Chart(el,{type:'line',data:{labels:DATES,datasets:strats.map(s=>({label:s,data:DATES.map(d=>{const pts=myCi.filter(c=>pstrat(c)===s&&fmtDate(fld(c,'Date'))===d);return pts.length?avg(pts.map(c=>fld(c,'Confidence Rating')).filter(v=>v!==undefined)):null;}),borderColor:color(s),backgroundColor:color(s),pointBackgroundColor:color(s),pointRadius:4,tension:0.3,spanGaps:true}))},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{ticks:{font:{size:11}}},y:{beginAtZero:true,max:10,ticks:{font:{size:11}},grid:{color:'rgba(0,0,0,0.05)'}}}}});const leg=document.getElementById('tcleg');if(leg)leg.innerHTML=strats.map(s=>`<span style="display:flex;align-items:center;gap:4px;font-size:11px;color:var(--text-sec)"><span style="width:16px;height:2px;border-radius:1px;background:${color(s)};display:inline-block"></span>${s}</span>`).join('');}}
+}
+
+// INIT
+function init(){
+  const saved=localStorage.getItem('cc_user');
+  if(saved){try{state.user=JSON.parse(saved);state.view='loading';render();loadData().then(()=>{state.view=isAdmin(state.user.role)?'leadership':'teacher';render();});return;}catch(e){localStorage.removeItem('cc_user');}}
+  state.view='login';render();
+}
+init();
+</script>
+</body>
+</html>
